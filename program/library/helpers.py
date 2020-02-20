@@ -114,6 +114,8 @@ def lettersAndNumbersOnly(s):
 def lettersNumbersAndSpacesOnly(s):
     return ''.join(filter(lambda x: x.isdigit() or x.isalpha() or x == ' ', s))
 
+def lettersNumbersAndSpecifiedOnly(s, specified):
+    return ''.join(filter(lambda x: x.isdigit() or x.isalpha() or x in specified, s))
 
 def lettersOnly(s):
     return ''.join(filter(lambda x: x.isalpha(), s))
@@ -511,13 +513,18 @@ def setUpLogging(directory='logs', fileNameSuffix='', useDatabase=False, loggerN
     if fileNameSuffix:
         threadIndicator = '[' + fileNameSuffix.replace('-', '') + ']'
 
+    threadPart = ''
+
+    if loggerName:
+        threadPart = '[%(threadName)s]'
+
     logger = logging.getLogger(loggerName)
     
     # otherwise root logger prints things again
     logger.propagate = False
  
     formatter = logging.Formatter(f'{threadIndicator}[%(asctime)s][%(levelname)s]\n%(message)s', '%H:%M:%S')
-    formatterForFile = logging.Formatter(f'{threadIndicator}[%(threadName)s][%(asctime)s][%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
+    formatterForFile = logging.Formatter(f'{threadIndicator}{threadPart}[%(asctime)s][%(levelname)s] %(message)s', '%Y-%m-%d %H:%M:%S')
     logger.setLevel(logging.DEBUG)
 
     stream_handler = logging.StreamHandler()
