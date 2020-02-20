@@ -10,6 +10,7 @@ import program.library.helpers as helpers
 
 from program.library.helpers import get
 from program.library.selenium import Selenium
+from program.library.images import Images
 from program.library.email import Email
 
 class Main:
@@ -42,8 +43,8 @@ class Main:
         directory = os.path.dirname(newFileName)
 
         files = helpers.listFiles(directory)
-        files = files.sort()
-        files = reversed(files)
+        files.sort()
+        files.reverse()
         
         oldFileName = None
         
@@ -57,10 +58,10 @@ class Main:
             logging.info('Nothing to compare with yet')
             return result
 
-        percentage = self.percentageSimilar(oldFileName, newFileName)
+        percentage = self.percentageDifference(oldFileName, newFileName)
 
-        if percentage < self.options['threshold']:
-            logging.info(f'Less than {self.options["threshold"]}% similar. Sending email.')
+        if percentage > self.options['allowedDifference']:
+            logging.info(f'More than {self.options["allowedDifference"]}% different. Sending email.')
             
             result = {
                 'oldFileName': oldFileName,
@@ -68,22 +69,27 @@ class Main:
                 'percentage': percentage
             }
         else:
-            logging.info(f'Equal to or over {self.options["threshold"]}% similar. Not sending email.')
+            logging.info(f'Less than or equal to {self.options["allowedDifference"]}% difference. Not sending email.')
 
         return result
         
     def sendEmail(self, url, information):
-        message = f'The screenshot for {url} is only {get(information, "percentage")}% the same as last time.'
+        percentage = get(information, 'percentage')
+        percentage = helpers.fixedDecimals(percentage, 3)
+
+        message = f'The screenshot for {url} is {percentage}% different than the previous screenshot.'
             
         self.email.sendEmail(self.options['emailAddress'], 'Screenshot changed', message)
 
-    def percentageSimilar(self, file1, file2):
-        result = 0;
-
+    def percentageDifference(self, file1, file2):
         logging.info(f'Comparing {file1} and {file2}')
-        logging.info(f'Similarity {result}%')
+
+        images = Images()
+        result = images.differencePercentage(file1, file2)
+
+        logging.info(f'Difference {result}%')
         
-        return 0
+        return result
 
     def removeMiddle(self, string, maximumLength):
         result = string
@@ -151,7 +157,7 @@ class Main:
             'smtpUsername': '',
             'smtpPassword': '',
             'secondsBeforeScreenshot': '1',
-            'threshold': 95
+            'allowedDifference': 5
         }
 
         optionsFileName = helpers.getParameter('--optionsFile', False, 'user-data/options.ini')

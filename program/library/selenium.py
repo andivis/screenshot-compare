@@ -22,7 +22,8 @@ class Selenium:
         self.driver.save_screenshot(fileName)
 
     def shutdown(self):
-        self.driver.quit()
+        if self.driver:
+            self.driver.quit()
 
     def initialize(self, browser):
         if self.initialized:
