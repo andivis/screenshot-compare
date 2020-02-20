@@ -3,7 +3,12 @@ import os
 import time
 import logging
 
+# pip packages
 from selenium import webdriver
+
+from . import helpers
+
+from .helpers import get
 
 class Selenium:
     def getScreenshot(self, url, fileName, secondsBeforeScreenshot, browser='chrome'):
@@ -11,7 +16,8 @@ class Selenium:
 
         self.driver.get(url)
 
-        time.sleep(int(secondsBeforeScreenshot))
+        if secondsBeforeScreenshot:
+            helpers.wait(secondsBeforeScreenshot)
 
         self.driver.save_screenshot(fileName)
 
