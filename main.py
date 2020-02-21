@@ -19,11 +19,16 @@ class Main:
 
         file = helpers.getFile(self.options['inputFile'])
 
-        inputRows = file.splitlines()
+        inputRows = []
+
+        if self.options['url']:
+            inputRows = [self.options['url']]
+        else:
+            inputRows = file.splitlines()
 
         for i, inputRow in enumerate(inputRows):
             try:
-                logging.info(f'Line {i + 1} of {len(inputRows)}: {inputRow}')
+                logging.info(f'Url {i + 1} of {len(inputRows)}: {inputRow}')
 
                 self.currentFileName = self.getOutputFileName(inputRow)
                 self.browser.getScreenshot(inputRow, self.currentFileName, self.options['secondsBeforeScreenshot'], self.options['browser'])
@@ -85,7 +90,11 @@ class Main:
         logging.info(f'Comparing {file1} and {file2}')
 
         images = Images()
-        result = images.differencePercentage(file1, file2)
+        try:
+            result = images.differencePercentage(file1, file2)
+        except Exception as e:
+            logging.error(e)
+            result = 100
 
         logging.info(f'Difference {result}%')
         
@@ -143,6 +152,21 @@ class Main:
         self.browser.shutdown()
         logging.info('Done')
 
+    def setParameters(self, parameters, options):
+        result = options
+        
+        for parameter, possibleNames in parameters.items():
+            for possibleName in possibleNames:
+                value = helpers.getParameter(possibleName, False)
+
+                if value:
+                    if isinstance(get(options, parameter), int):
+                        result[parameter] = int(value)
+                    else:
+                        result[parameter] = value
+
+        return result
+
     def __init__(self, siteToRun='', modeToRun=''):
         helpers.setUpLogging('user-data/logs')
 
@@ -152,6 +176,7 @@ class Main:
             'outputDirectory': 'user-data/output',
             'browser': 'firefox',
             'emailAddress': '',
+            'url': '',
             'smtpHost': '',
             'smtpPort': '',
             'smtpUsername': '',
@@ -164,6 +189,14 @@ class Main:
         
         # read the options file
         helpers.setOptions(optionsFileName, self.options)
+
+        parameters = {
+            'url': ['-u', '--url'],
+            'emailAddress': ['-e', '--email'],
+            'allowedDifference': ['-m', '--max-difference']
+        }
+
+        self.options = self.setParameters(parameters, self.options)
 
         helpers.makeDirectory(self.options['outputDirectory'])
 

@@ -411,7 +411,6 @@ def getParameterIfExists(self, existingValue, parameterName):
 
     return result
 
-
 def getParameter(name, required, default=''):
     result = default
 
