@@ -47,7 +47,7 @@ class Selenium:
             options.headless = True
 
             self.driver = webdriver.Firefox(options=options)
-    
+
     def __init__(self):
         self.initialized = False
         self.driver = None
