@@ -29,7 +29,7 @@ class Email:
             smtpserver.ehlo()
 
             # some servers may not require authentication
-            if gmail_user:
+            if gmail_user and gmail_password:
                 smtpserver.login(gmail_user, gmail_password)
 
             msg = MIMEText(message)
