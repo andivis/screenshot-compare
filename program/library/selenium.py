@@ -20,7 +20,11 @@ class Selenium:
         if secondsBeforeScreenshot:
             helpers.wait(secondsBeforeScreenshot)
 
-        self.driver.save_screenshot(fileName)
+        element = self.driver.find_element_by_tag_name('body')
+        element_png = element.screenshot_as_png
+        
+        with open(fileName, "wb") as file:
+            file.write(element_png)
 
     def shutdown(self):
         if self.driver:
