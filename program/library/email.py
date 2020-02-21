@@ -27,7 +27,10 @@ class Email:
             smtpserver.ehlo()
             smtpserver.starttls()
             smtpserver.ehlo()
-            smtpserver.login(gmail_user, gmail_password)
+
+            # some servers may not require authentication
+            if gmail_user:
+                smtpserver.login(gmail_user, gmail_password)
 
             msg = MIMEText(message)
             msg['Subject'] = subject
