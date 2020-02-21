@@ -6,6 +6,13 @@ import traceback
 import random
 import string
 
+from pathlib import Path
+
+if not os.path.exists('program/library/selenium.py'):
+    home = str(Path.home())
+    os.chdir(home + '/screenshot-compare')
+    sys.path.append(home + '/screenshot-compare')
+
 import program.library.helpers as helpers
 
 from program.library.helpers import get
