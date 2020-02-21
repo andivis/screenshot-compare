@@ -5,6 +5,7 @@ import logging
 
 # pip packages
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 from . import helpers
 
@@ -32,10 +33,16 @@ class Selenium:
         self.initialized = True
 
         if browser == 'chrome':
-            chromedriver = "chromedriver.exe"
-            self.driver = webdriver.Chrome(chromedriver)
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--window-size=1280x720")
+            
+            self.driver = webdriver.Chrome(chrome_options=chrome_options)
         else:
-            self.driver = webdriver.Firefox()
+            options = webdriver.firefox.options.Options()
+            options.headless = True
+
+            self.driver = webdriver.Firefox(options=options)
     
     def __init__(self):
         self.initialized = False

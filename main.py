@@ -150,7 +150,7 @@ class Main:
         self.options = {
             'inputFile': 'user-data/input/input.txt',
             'outputDirectory': 'user-data/output',
-            'browser': 'chrome',
+            'browser': 'firefox',
             'emailAddress': '',
             'smtpHost': '',
             'smtpPort': '',
