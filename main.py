@@ -52,6 +52,10 @@ class Main:
     def compareWithPrevious(self, newFileName):
         result = {}
 
+        if self.options['initialMode']:
+            logging.info(f'--initial is present. Not looking for previous screenshot.')
+            return result
+
         directory = os.path.dirname(newFileName)
 
         files = helpers.listFiles(directory)
@@ -67,8 +71,20 @@ class Main:
                 break
 
         if not oldFileName:
-            logging.info('Nothing to compare with yet')
-            return result
+            # this mode means to consider it a failure if there's no previous screenshot
+            if self.options['compareMode']:
+                logging.info(f'No previous screenshot and --compare is present. Considering this a failure.')
+                
+                result = {
+                    'oldFileName': '',
+                    'newFileName': newFileName,
+                    'percentage': 100
+                }
+
+                return result
+            else:                
+                logging.info('Nothing to compare with yet')
+                return result
 
         percentage = self.percentageDifference(oldFileName, newFileName)
 
@@ -164,13 +180,19 @@ class Main:
         
         for parameter, possibleNames in parameters.items():
             for possibleName in possibleNames:
-                value = helpers.getParameter(possibleName, False)
+                # just check if parameter exists
+                if isinstance(get(options, parameter), bool):
+                    if possibleName in sys.argv:
+                        result[parameter] = True
+                # get parameter after this one
+                else:
+                    value = helpers.getParameter(possibleName, False)
 
-                if value:
-                    if isinstance(get(options, parameter), int):
-                        result[parameter] = int(value)
-                    else:
-                        result[parameter] = value
+                    if value:
+                        if isinstance(get(options, parameter), int):
+                            result[parameter] = int(value)
+                        else:
+                            result[parameter] = value
 
         return result
 
@@ -189,7 +211,9 @@ class Main:
             'smtpUsername': '',
             'smtpPassword': '',
             'secondsBeforeScreenshot': '1',
-            'allowedDifference': 5
+            'allowedDifference': 5,
+            'initialMode': False,
+            'compareMode': True,
         }
 
         optionsFileName = helpers.getParameter('--optionsFile', False, 'user-data/options.ini')
@@ -200,11 +224,20 @@ class Main:
         parameters = {
             'url': ['-u', '--url'],
             'emailAddress': ['-e', '--email'],
-            'allowedDifference': ['-m', '--max-difference']
+            'allowedDifference': ['-m', '--max-difference'],
+            'initialMode': ['-i', '--initial'],
+            'compareMode': ['-c', '--compare']
         }
 
         self.options = self.setParameters(parameters, self.options)
 
+        # because they are mutually exclusive
+        if self.options['initialMode']:
+            self.options['compareMode'] = False
+
+        if self.options['compareMode']:
+            self.options['initialMode'] = False
+        
         helpers.makeDirectory(self.options['outputDirectory'])
 
         self.browser = Selenium()
