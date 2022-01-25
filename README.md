@@ -1,9 +1,16 @@
-# screenshot compare
+# Screenshot Compare
 
-## Videos
+-   Get notified when the screenshot of a given webpage changes
+-   The change must be at least X percent of the pixels. X defaults to 5. This way you can ignore insignificant changes.
+-   Use it to easily monitor your websites for unintended changes and bugs
+-   **100%** Python. Uses headless Chrome or headless Firefox.
 
-https://www.loom.com/share/c6c45aa6f3e445a18068e803b552971c
-https://www.loom.com/share/10263dd3ae2e4b189a078cdbbd0ded6e
+## Table of Contents
+
+1. [Installation](#installation)
+2. [Usage](#usage)
+3. [Command line parameters](#command-line-parameters)
+4. [Options](#options)
 
 ## Installation
 
@@ -17,7 +24,9 @@ chmod +x geckodriver
 export PATH=$PATH:/location-of-geckodriver
 ```
 
-3. Run the commands below. Depending on your system you may need run `pip` instead of `pip3`.
+3. If you prefer to use Chrome instead of Firefox, make sure Chrome and chromedriver are installed. chromedriver must be in your `PATH`.
+
+4. Run the commands below. Depending on your system you may need run `pip` instead of `pip3`.
 
 ```
 git clone https://github.com/andivis/screenshot-compare.git
@@ -25,28 +34,31 @@ cd screenshot-compare
 pip3 install -r requirements.txt
 ```
 
-## Instructions
+## Usage
 
 1. Make sure `user-data/input/input.txt` contains the list of url's.
-2. Run `python3 main.py`. Depending on your system you may need run `python main.py` instead
+2. If you want to get notified by email, put your SMTP credentials in `user-data/options.ini`.
+3. Run `python3 main.py --initial`. Depending on your system you may need to run `python main.py --initial` instead. This simply takes the initial screenshots to compare against later.
+4. Run `python3 main.py --compare`. The app checks if the screenshot of any of the webpages differs from the screenshot it took last time. If so, it will print a message to the terminal and email you.
+5. For subsequent runs, you can just `python3 main.py --compare` again.
 
 ## Command line parameters
 
-- `-u` or `--url`: the url to take the screenshot of
-- `-e` or `--email`: the email address to send notifications to
-- `-m` or `--max-difference`: the most the current screenshot can differ from the last one, in percent
+-   `-u` or `--url`: the url to take the screenshot of
+-   `-e` or `--email`: the email address to send notifications to
+-   `-m` or `--max-difference`: the most the current screenshot can differ from the last one, in percent
 
 ## Options
 
 `user-data/options.ini` accepts the following options:
 
-- `inputFile`: Default: `user-data/input/input.txt`
-- `outputDirectory`: Default: `user-data/output`
-- `browser`: Can be firefox or chrome. Default: `firefox`
-- `emailAddress`: the email address to send notifications to. Default: ``
-- `smtpHost`: Default: ``
-- `smtpPort`: Default: ``
-- `smtpUsername`: Default: ``
-- `smtpPassword`: Default: ``
-- `secondsBeforeScreenshot`: Wait after page load before taking screenshot. Default: `1`
-- `allowedDifference`: The most the current screenshot can differ from the last one, in percent. Default: 5
+-   `inputFile`: Default: `user-data/input/input.txt`
+-   `outputDirectory`: Default: `user-data/output`
+-   `browser`: Can be firefox or chrome. Default: `firefox`
+-   `emailAddress`: the email address to send notifications to. Default: ``
+-   `smtpHost`: Default: ``
+-   `smtpPort`: Default: ``
+-   `smtpUsername`: Default: ``
+-   `smtpPassword`: Default: ``
+-   `secondsBeforeScreenshot`: Wait after page load before taking screenshot. Default: `1`
+-   `allowedDifference`: The most the current screenshot can differ from the last one, in percent. Default: 5

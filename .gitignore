@@ -1,6 +1,7 @@
 /.vscode
 /user-data/logs
 /user-data/output
+*.exe
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -196,7 +196,7 @@ class Main:
 
         return result
 
-    def __init__(self, siteToRun='', modeToRun=''):
+    def __init__(self):
         helpers.setUpLogging('user-data/logs')
 
         # set default options
